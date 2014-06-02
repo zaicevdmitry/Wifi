@@ -70,7 +70,7 @@ public class AccessPointDB
 		lAP1.add(fAP1[1]);
 		lAP1.add(fAP1[2]);
 		//accessPoints.put("98:fc:11:8e:46:f0", l1); // intex 1
-		accessPoints.put("c4:43:8f:47:68:13", lAP1); // Nuxes 4
+		accessPoints.put("60:a1:0a:f2:0c:b6", lAP1); // Nuxes 4
 
 		/*LinkedList<Float> l3 = new LinkedList<Float>();
 		float[] f3 = { Float.valueOf(50f), Float.valueOf(50f), Float.valueOf(-20f) };

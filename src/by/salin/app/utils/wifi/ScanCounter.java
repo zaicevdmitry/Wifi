@@ -34,7 +34,7 @@ public class ScanCounter implements Runnable
 {
 	private static Map<String,String> macRegistry = new HashMap<String, String>();
 	static{
-		macRegistry.put("38:e7:d8:a6:f9", "Desir");
+		macRegistry.put("60:a1:0a:f2:0c:b6", "HTC One");
 		
 		macRegistry.put("c4:43:8f:47:68:13", "Nuxes 4");
 		
@@ -43,7 +43,7 @@ public class ScanCounter implements Runnable
 		macRegistry.put("78:1d:ba:27:7b:03", "Tamogoch");
 		
 	}
-	private static Map<Integer,String> levelRegistry = new HashMap<Integer, String>();
+	private static Map<String,Integer> levelRegistry = new HashMap<String, Integer>();
 	
 	private List<ScanResult> scans;
 	private WeightedScanFactory wsFactory;
@@ -83,7 +83,7 @@ public class ScanCounter implements Runnable
 			// create a weighted scan and save it in the list
 			int reqScan = 0;
 			levelRegistry.clear();
-			List<Integer> levelList = new ArrayList<Integer>();
+			List<String> levelList = new ArrayList<String>();
 			for(ScanResult scan : scans)
 			{
 				int level = WifiManager.calculateSignalLevel(scan.level, 20);
@@ -98,27 +98,19 @@ public class ScanCounter implements Runnable
 					sumZ += level * wScan.GetPos().get(z);
 					count += level;
 					//outputLevel += macRegistry.get(scan.BSSID) + " - level:" + level + ",\n";
-					levelRegistry.put(level, scan.BSSID);
+					levelRegistry.put(scan.BSSID, level);
 					reqScan++;
 				}
 				
 			}
 			if (!levelRegistry.isEmpty()){
 				levelList.addAll(levelRegistry.keySet());
-				Collections.sort(levelList,new Comparator<Integer>()
-				{
-					@Override
-					public int compare(Integer arg0, Integer arg1)
-					{
-						
-						return arg1.compareTo(arg0);
-					}
-				});
+				
 				}
-				for (Integer sortedLevel: levelList){
-					outputLevel += macRegistry.get(levelRegistry.get(sortedLevel)) + " - level:" + sortedLevel + ",\n";
+				for (String macdevice: levelList){
+					outputLevel += macRegistry.get(levelRegistry.get(macdevice)) + " - Device: " + macdevice + ",\n";
 				}
-			if(reqScan > 0)
+				if(reqScan > 0)
 			{
 				float dLevel = count / reqScan;
 				float dX = Float.valueOf((sumX / reqScan) / 20);
@@ -155,7 +147,7 @@ public class ScanCounter implements Runnable
 				
 				MainActivity.getHolder().setCoordsText(",sumX = " + output[0] + "\n,sumY = " + output[1] + "\n,symZ = " + output[2] + "\n,count = " + count);
 				
-				Phone phone = new Phone(output[0] , output[1]);
+				Phone phone = new Phone(levelRegistry);
 				Gson gson = new Gson();
 		        String jsonData = gson.toJson(phone);
 
@@ -185,13 +177,14 @@ public class ScanCounter implements Runnable
 	 public class Phone   {
 	        double x;
 	        double y;
+	        private Map<String, Integer> levelRegistry;
 
-	        public Phone(double x, double y) {
-	            this.x = x;
-	            this.y = y;
+	        public Phone(Map<String, Integer> levelRegistry) {
+	        	this.setLevelRegistry(levelRegistry);
 	        }
 
-	        public double getX() {
+	       
+			public double getX() {
 	            return x;
 	        }
 
@@ -206,5 +199,15 @@ public class ScanCounter implements Runnable
 	        public void setY(double y) {
 	            this.y = y;
 	        }
+
+
+			public Map<String, Integer> getLevelRegistry() {
+				return levelRegistry;
+			}
+
+
+			public void setLevelRegistry(Map<String, Integer> levelRegistry) {
+				this.levelRegistry = levelRegistry;
+			}
 	    }
 }
